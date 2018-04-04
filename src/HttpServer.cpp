@@ -19,6 +19,74 @@
 
 __attribute__((weak)) void httpServerEvent(const HttpRequest &req, HttpResponse &res);
 
+#if defined(ESCAPE_FORM_STRING_VALUES)
+const struct formStringEscape {
+	char code[4];
+	char value[2];
+} formStringEscapes[] = {
+	{ "%0A", "\n" },
+	{ "%0D", "\r" },
+	{ "%20", " " },
+	{ "%21", "!" },
+	{ "%22", "\"" },
+	{ "%23", "#" },
+	{ "%24", "$" },
+	{ "%25", "%" },
+	{ "%26", "&" },
+	{ "%27", "'" },
+	{ "%28", "(" },
+	{ "%29", ")" },
+	{ "%2A", "*" },
+	{ "%2B", "+" },
+	{ "%2C", "," },
+	{ "%2D", "-" },
+	{ "%2E", "." },
+	{ "%2F", "/" },
+	{ "%3A", ":" },
+	{ "%3B", ";" },
+	{ "%3C", "<" },
+	{ "%3D", "=" },
+	{ "%3E", ">" },
+	{ "%3F", "?" },
+	{ "%40", "@" },
+	{ "%5B", "[" },
+	{ "%5C", "\\" },
+	{ "%5D", "]" },
+	{ "%5E", "^" },
+	{ "%5F", "_" },
+	{ "%60", "`" },
+	{ "%7B", "{" },
+	{ "%7C", "|" },
+	{ "%7D", "}" },
+	{ "%7E", "~" },
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+static void escape(String &str) {
+	struct formStringEscape *ptr = formStringEscapes;
+	for (unsigned i = 0; i < sizeof(formStringEscapes) / sizeof(struct formStringEscape); ++i) {
+		str.replace(ptr->code, ptr->value);
+		++ptr;
+	}
+}
+#endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+String FormString::getValue(const String &name) {
+	String ret;
+
+	int paramPosition = startsWith(name + '=') ? 0 : (indexOf("&" + name + '=') + 1);
+	if (paramPosition >= 0) {
+		int valuePosition = paramPosition + name.length() + 1;
+		ret = substring(valuePosition, indexOf('&', valuePosition));
+#if defined ESCAPE_FORM_STRING_VALUES
+		escape(ret);
+#endif
+	}
+
+	return ret;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 HttpResponse::HttpResponse(EthernetClient &client) : _client(client) {
 

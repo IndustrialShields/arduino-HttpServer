@@ -9,10 +9,18 @@
 #include <Ethernet.h>
 #endif
 
+// Comment ESCAPE_FORM_STRING_VALUES definition to save some RAM and FLASH
+#define ESCAPE_FORM_STRING_VALUES
+
+class FormString : public String {
+	public:
+		String getValue(const String &name);
+};
+
 typedef struct {
 	String method;
 	String route;
-	String queryString;
+	FormString queryString;
 	String body;
 } HttpRequest;
 
