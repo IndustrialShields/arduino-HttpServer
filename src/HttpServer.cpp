@@ -73,16 +73,21 @@ static void escape(String &str) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 String FormString::getValue(const String &name) {
-	String ret;
+	int paramPosition = 0;
 
-	int paramPosition = startsWith(name + '=') ? 0 : (indexOf("&" + name + '=') + 1);
-	if (paramPosition >= 0) {
-		int valuePosition = paramPosition + name.length() + 1;
-		ret = substring(valuePosition, indexOf('&', valuePosition));
-#if defined ESCAPE_FORM_STRING_VALUES
-		escape(ret);
-#endif
+	if (!startsWith(name + '=')) {
+		paramPosition = indexOf("&" + name + '=');
+		if (paramPosition < 0) {
+			return "";
+		}
+		++paramPosition;
 	}
+
+	int valuePosition = paramPosition + name.length() + 1;
+	String ret = substring(valuePosition, indexOf('&', valuePosition));
+#if defined ESCAPE_FORM_STRING_VALUES
+	escape(ret);
+#endif
 
 	return ret;
 }
