@@ -14,6 +14,10 @@
 
 class FormString : public String {
 	public:
+		FormString();
+		explicit FormString(const String &str);
+
+	public:
 		String getValue(const String &name);
 };
 
