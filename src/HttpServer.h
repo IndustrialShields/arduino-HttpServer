@@ -36,6 +36,7 @@ class HttpResponse {
 	public:
 		bool send(const String &body, const String &contentType, uint16_t status, const String &statusText);
 		bool send(const __FlashStringHelper * body, const __FlashStringHelper *contentType, uint16_t status, const __FlashStringHelper *statusText);
+		bool sendStream(const Stream &stream, const String &contentType);
 
 		inline bool send(const String &body, const String &contentType) {
 			return send(body, contentType, 200, "OK");
