@@ -259,6 +259,11 @@ void HttpServer::update() {
     HttpRequest req;
     HttpResponse res(client);
 
+    if (client.connected()){
+      req.remoteIP = client.remoteIP();
+      req.remotePort = client.remotePort();
+    }
+
     // Parse the request
     // It is finished when all the data is received or when the connection is closed
     while (client.connected() && (section < FinishedSection)) {
