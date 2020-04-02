@@ -49,7 +49,7 @@ void httpServerEvent(const HttpRequest &req, HttpResponse &res) {
     content += "method: " + req.method + "\n";
     content += "route: " + req.route + "\n";
     content += "query string: " + req.queryString + "\n";
-    content += "abc: " + req.queryString.getValue("abc") + "\n";
+    content += "abc: " + req.queryString.getValue(F("abc")) + "\n";
     // Send text content
     res.text(content);
 

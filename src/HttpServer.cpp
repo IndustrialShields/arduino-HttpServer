@@ -79,7 +79,7 @@ FormString::FormString(const String &str) : String(str) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-String FormString::getValue(const String &name) {
+String FormString::getValue(const String &name) const {
   int paramPosition = 0;
 
   if (!startsWith(name + '=')) {

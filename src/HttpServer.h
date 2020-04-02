@@ -18,8 +18,7 @@ class FormString : public String {
 		explicit FormString(const String &str);
 
 	public:
-		String getValue(const String &name);
-		String getValue(const __FlashStringHelper *name);
+		String getValue(const String &name) const;
 };
 
 typedef struct {
