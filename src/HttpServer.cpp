@@ -170,7 +170,7 @@ bool HttpResponse::send(const __FlashStringHelper *body, const __FlashStringHelp
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool HttpResponse::sendStream(const Stream &stream, const String &contentType){
+bool HttpResponse::sendStream(Stream &stream, const String &contentType){
   uint8_t buff[512];
   uint16_t counter = 0;
   uint16_t buff_len = 512;
