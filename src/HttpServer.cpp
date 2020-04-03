@@ -226,22 +226,6 @@ bool HttpResponse::redirect(const String &dest) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool HttpResponse::redirect(const __FlashStringHelper *dest) {
-  if (!_client.connected()) {
-    return false;
-  }
-
-  // Headers
-  _client.println(F("HTTP/1.1 303 See Other"));
-  // Content type
-  _client.print(F("Location: "));
-  _client.println(dest);
-  _client.println();
-
-  return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 HttpServer::HttpServer(uint16_t port) : EthernetServer(port) {
 
 }

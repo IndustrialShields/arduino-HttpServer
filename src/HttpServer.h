@@ -71,7 +71,6 @@ class HttpResponse {
 		}
 
 		bool redirect(const String &dest);
-		bool redirect(const __FlashStringHelper *dest);
 
 	private:
 		EthernetClient &_client;
