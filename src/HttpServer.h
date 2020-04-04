@@ -33,25 +33,15 @@ class HttpResponse {
 		explicit HttpResponse(EthernetClient &client);
 
 	public:
-		bool send(const String &body, const String &contentType, uint16_t status, const String &statusText);
+		bool send(const String &body, const String &contentType, uint16_t status = 200, const String &statusText = "OK");
 		bool sendStream(Stream &stream, const String &contentType);
 
-		inline bool send(const String &body, const String &contentType) {
-			return send(body, contentType, 200, "OK");
+		inline bool text(const String &body, uint16_t status = 200, const String &statusText = "OK") {
+			return send(body, F("text/plain"), status, statusText);
 		}
 
-		inline bool text(const String &body) {
-			return send(body, "text/plain");
-		}
-		inline bool text(const String &body, uint16_t status, const String &statusText) {
-			return send(body, "text/plain", status, statusText);
-		}
-
-		inline bool html(const String &body) {
-			return send(body, "text/html");
-		}
-		inline bool html(const String &body, uint16_t status, const String &statusText) {
-			return send(body, "text/html", status, statusText);
+		inline bool html(const String &body, uint16_t status = 200, const String &statusText = "OK") {
+			return send(body, F("text/html"), status, statusText);
 		}
 
 		bool redirect(const String &dest);
