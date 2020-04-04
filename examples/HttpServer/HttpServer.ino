@@ -59,6 +59,6 @@ void httpServerEvent(const HttpRequest &req, HttpResponse &res) {
 
   } else {
     // Send an error
-    res.send("Not Found", "text/plain", 404, "Not Found");
+    res.send("Not Found", "text/plain", 404, F("Not Found"));
   }
 }

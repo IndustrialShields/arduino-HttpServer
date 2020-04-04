@@ -134,42 +134,6 @@ bool HttpResponse::send(const String &body, const String &contentType, uint16_t 
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool HttpResponse::send(const __FlashStringHelper *body, const __FlashStringHelper *contentType, uint16_t status, const __FlashStringHelper *statusText) {
-  if (!_client.connected()) {
-    return false;
-  }
-
-  // Headers
-  _client.print(F("HTTP/1.1 "));
-  _client.print(status);
-  _client.print(' ');
-  _client.println(statusText);
-  // Content type
-  _client.print(F("Content-Type: "));
-  _client.println(contentType);
-  // Content length
-  _client.print(F("Content-Length: "));
-  PGM_P p = reinterpret_cast<PGM_P>(body);
-  size_t n = 0;
-  while (1) {
-    unsigned char c = pgm_read_byte(p++);
-    if (c == 0) break;
-    n++;
-  }
-  _client.println(n);
-
-  // Blank line
-  _client.println();
-  // Body
-  _client.println(body);
-
-  // Wait to be sent
-  _client.flush();
-
-  return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 bool HttpResponse::sendStream(Stream &stream, const String &contentType){
   uint8_t buff[512];
   uint16_t counter = 0;
