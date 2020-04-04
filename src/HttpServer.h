@@ -22,6 +22,8 @@ class FormString : public String {
 };
 
 typedef struct {
+	IPAddress remoteIP;
+	uint16_t remotePort;
 	String method;
 	String route;
 	FormString queryString;

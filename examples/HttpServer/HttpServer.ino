@@ -30,6 +30,8 @@ void loop() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void httpServerEvent(const HttpRequest &req, HttpResponse &res) {
+  Serial.print("client: ");
+  Serial.println(req.remoteIP);
   Serial.print("method: ");
   Serial.println(req.method);
   Serial.print("route: ");

@@ -207,6 +207,11 @@ void HttpServer::update() {
     HttpRequest req;
     HttpResponse res(client);
 
+    if (client.connected()){
+      req.remoteIP = client.remoteIP();
+      req.remotePort = client.remotePort();
+    }
+
     // Parse the request
     // It is finished when all the data is received or when the connection is closed
     while (client.connected() && (section < FinishedSection)) {
@@ -262,7 +267,7 @@ void HttpServer::update() {
             if ((c == '\r') || (c == ' ')) {
               // Ingore CR and spaces
             } else if (c == '\n') {
-              if (headerName.equalsIgnoreCase("Content-Length")) {
+              if (headerName.equalsIgnoreCase(F("Content-Length"))) {
                 contentLength = headerValue.toInt();
               }
               section = EmptyLineSection;
