@@ -319,7 +319,7 @@ void HttpServer::update() {
             if ((c == '\r') || (c == ' ')) {
               // Ingore CR and spaces
             } else if (c == '\n') {
-              if (headerName.equalsIgnoreCase("Content-Length")) {
+              if (headerName.equalsIgnoreCase(F("Content-Length"))) {
                 contentLength = headerValue.toInt();
               }
               section = EmptyLineSection;
