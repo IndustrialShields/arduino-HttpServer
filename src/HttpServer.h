@@ -12,6 +12,11 @@
 // Comment ESCAPE_FORM_STRING_VALUES definition to save some RAM and FLASH
 #define ESCAPE_FORM_STRING_VALUES
 
+// #define SET_CONNECTION_CLOSE to send http header "Connetion: close" and thus notify client that this connection will be closed by server
+// or (but not both)
+// #define SET_KEEP_ALIVE to send http header "Keep-Alive: timeout=1, max=1" and thus force client to close connection
+#define SET_KEEP_ALIVE
+
 class FormString : public String {
 	public:
 		FormString();

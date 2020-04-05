@@ -118,6 +118,12 @@ bool HttpResponse::send(const String &body, const String &contentType, uint16_t 
   // Content type
   _client.print(F("Content-Type: "));
   _client.println(contentType);
+  // Manage connection persistence
+  #if defined(SET_CONNECTION_CLOSE)
+  _client.println(F("Connetion: close"));
+  #elif defined(SET_KEEP_ALIVE)
+  _client.println(F("Keep-Alive: timeout=1, max=1"));
+  #endif
   // Content length
   _client.print(F("Content-Length: "));
   _client.println(body.length());
