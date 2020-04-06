@@ -1,0 +1,87 @@
+# This is the name of the workflow, visible on GitHub UI.
+name: Test Action
+
+# Here we tell GitHub to run the workflow when a commit
+# is pushed or a Pull Request is opened, for each paths.
+on: 
+  push:
+    paths: 
+    - "src/*"
+    - "examples/*"
+    - ".github/workflows/*"
+  pull_request:
+    paths: 
+    - "src/*"
+    - "examples/*"    
+
+# This is the list of jobs that will be run concurrently.
+# Since we use a build matrix, the actual number of jobs
+# started depends on how many configurations the matrix
+# will produce.
+jobs:
+  boards:
+    
+    # This is the name of the job
+    name: "Test for ${{ matrix.config.board }}"
+    
+    # This is the platform GitHub will use to run our workflow, we
+    # pick Windows for no particular reason.
+    runs-on: windows-latest
+    
+    # Here we tell GitHub that the jobs must be determined
+    # dynamically depending on a matrix configuration.
+    strategy:
+      
+      # Set to false so that GitHub does not cancel all jobs
+      # in progress if any array job fails.
+      fail-fast: false
+      
+      # The matrix will produce one job for each configuration:
+      matrix:
+        config:
+          - board: "Arduino UNO"
+            fqbn: "arduino:avr:uno" 
+            platform: "arduino:avr"
+      
+          - board: "Arduino Mega 2560"
+            fqbn: "arduino:avr:mega"
+            platform: "arduino:avr"
+        
+          - board: "Arduino Leonardo"
+            fqbn: "arduino:avr:leonardo"
+            platform: "arduino:avr"
+    
+    # This is the list of steps this job will run.
+    steps:
+      # First of all, we clone the repo using the `checkout` action.
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # We use the `arduino/setup-arduino-cli` action to install and
+      # configure the Arduino CLI on the system.
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v1.0.0
+
+      # We then install the platform, which one will be determined
+      # dynamically by the build matrix.
+      - name: Install platform ${{ matrix.config.platform }} 
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install ${{ matrix.config.platform }}
+          
+      # Install Libraries
+      - name: Install library Ethernet
+        run: |
+          arduino-cli lib update-index
+          arduino-cli lib install Ethernet 
+          
+      # Finally, we compile the sketch, using the FQBN that was set in the build matrix.
+      - name: Compile example sketch for ${{ matrix.config.board }}
+        run: arduino-cli compile --fqbn ${{ matrix.config.fqbn }} --libraries ../HttpServer ./examples/HttpServer/HttpServer.ino
+      
+      # Upload binary (.hex) files to artifacts
+      - name: Upload compiled binaries files to Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: "Binaries for ${{ matrix.config.board }}"
+          path: ./examples/HttpServer
