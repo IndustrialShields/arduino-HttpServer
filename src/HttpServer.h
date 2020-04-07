@@ -2,15 +2,10 @@
 #define __HttpServer_H__
 
 #include <Arduino.h>
-
-#ifdef MDUINO_PLUS
-#include <Ethernet2.h>
-#else
 #include <Ethernet.h>
-#endif
 
 // Comment ESCAPE_FORM_STRING_VALUES definition to save some RAM and FLASH
-#define ESCAPE_FORM_STRING_VALUES
+// #define ESCAPE_FORM_STRING_VALUES
 
 // #define SET_CONNECTION_CLOSE to send http header "Connetion: close" and thus notify client that this connection will be closed by server
 // or (but not both)

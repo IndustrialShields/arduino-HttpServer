@@ -1,4 +1,5 @@
 /*
+   (c) 2020 Jorge Rivera https://github.com/latchdevel
    Copyright (c) 2018 Boot&Work Corp., S.L. All rights reserved
    This library is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by

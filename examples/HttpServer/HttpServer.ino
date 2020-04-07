@@ -1,11 +1,6 @@
 // HttpServer library example
-// by Industrial Shields
 
-#ifdef MDUINO_PLUS
-#include <Ethernet2.h>
-#else
 #include <Ethernet.h>
-#endif
 
 #include <HttpServer.h>
 
