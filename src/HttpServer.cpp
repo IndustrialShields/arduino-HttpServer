@@ -131,10 +131,12 @@ bool HttpResponse::send(const String &body, const String &contentType, uint16_t 
   // Blank line
   _client.println();
   // Body
-  _client.println(body);
+  _client.print(body); // without CRLF according RFC-2616
 
-  // Wait to be sent
-  _client.flush();
+  // Wait to be sent if client still connected
+  if (_client.connected()) {
+    _client.flush();
+  }
 
   return true;
 }
