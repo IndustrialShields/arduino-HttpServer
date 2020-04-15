@@ -79,7 +79,7 @@ FormString::FormString(const String &str) : String(str) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-String FormString::getValue(const String &name) {
+String FormString::getValue(const String &name) const {
   int paramPosition = 0;
 
   if (!startsWith(name + '=')) {
@@ -118,6 +118,12 @@ bool HttpResponse::send(const String &body, const String &contentType, uint16_t 
   // Content type
   _client.print(F("Content-Type: "));
   _client.println(contentType);
+  // Manage connection persistence
+  #if defined(SET_CONNECTION_CLOSE)
+  _client.println(F("Connetion: close"));
+  #elif defined(SET_KEEP_ALIVE)
+  _client.println(F("Keep-Alive: timeout=1, max=1"));
+  #endif
   // Content length
   _client.print(F("Content-Length: "));
   _client.println(body.length());
@@ -125,52 +131,18 @@ bool HttpResponse::send(const String &body, const String &contentType, uint16_t 
   // Blank line
   _client.println();
   // Body
-  _client.println(body);
+  _client.print(body); // without CRLF according RFC-2616
 
-  // Wait to be sent
-  _client.flush();
+  // Wait to be sent if client still connected
+  if (_client.connected()) {
+    _client.flush();
+  }
 
   return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool HttpResponse::send(const __FlashStringHelper *body, const __FlashStringHelper *contentType, uint16_t status, const __FlashStringHelper *statusText) {
-  if (!_client.connected()) {
-    return false;
-  }
-
-  // Headers
-  _client.print(F("HTTP/1.1 "));
-  _client.print(status);
-  _client.print(' ');
-  _client.println(statusText);
-  // Content type
-  _client.print(F("Content-Type: "));
-  _client.println(contentType);
-  // Content length
-  _client.print(F("Content-Length: "));
-  PGM_P p = reinterpret_cast<PGM_P>(body);
-  size_t n = 0;
-  while (1) {
-    unsigned char c = pgm_read_byte(p++);
-    if (c == 0) break;
-    n++;
-  }
-  _client.println(n);
-
-  // Blank line
-  _client.println();
-  // Body
-  _client.println(body);
-
-  // Wait to be sent
-  _client.flush();
-
-  return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-bool HttpResponse::sendStream(const Stream &stream, const String &contentType){
+bool HttpResponse::sendStream(Stream &stream, const String &contentType){
   uint8_t buff[512];
   uint16_t counter = 0;
   uint16_t buff_len = 512;
@@ -226,22 +198,6 @@ bool HttpResponse::redirect(const String &dest) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-bool HttpResponse::redirect(const __FlashStringHelper *dest) {
-  if (!_client.connected()) {
-    return false;
-  }
-
-  // Headers
-  _client.println(F("HTTP/1.1 303 See Other"));
-  // Content type
-  _client.print(F("Location: "));
-  _client.println(dest);
-  _client.println();
-
-  return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 HttpServer::HttpServer(uint16_t port) : EthernetServer(port) {
 
 }
@@ -258,6 +214,11 @@ void HttpServer::update() {
     // Create the request and response objects
     HttpRequest req;
     HttpResponse res(client);
+
+    if (client.connected()){
+      req.remoteIP = client.remoteIP();
+      req.remotePort = client.remotePort();
+    }
 
     // Parse the request
     // It is finished when all the data is received or when the connection is closed
@@ -314,7 +275,7 @@ void HttpServer::update() {
             if ((c == '\r') || (c == ' ')) {
               // Ingore CR and spaces
             } else if (c == '\n') {
-              if (headerName.equalsIgnoreCase("Content-Length")) {
+              if (headerName.equalsIgnoreCase(F("Content-Length"))) {
                 contentLength = headerValue.toInt();
               }
               section = EmptyLineSection;

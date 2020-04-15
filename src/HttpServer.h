@@ -12,17 +12,23 @@
 // Comment ESCAPE_FORM_STRING_VALUES definition to save some RAM and FLASH
 #define ESCAPE_FORM_STRING_VALUES
 
+// #define SET_CONNECTION_CLOSE to send http header "Connetion: close" and thus notify client that this connection will be closed by server
+// or (but not both)
+// #define SET_KEEP_ALIVE to send http header "Keep-Alive: timeout=1, max=1" and thus force client to close connection
+#define SET_KEEP_ALIVE
+
 class FormString : public String {
 	public:
 		FormString();
 		explicit FormString(const String &str);
 
 	public:
-		String getValue(const String &name);
-		String getValue(const __FlashStringHelper *name);
+		String getValue(const String &name) const;
 };
 
 typedef struct {
+	IPAddress remoteIP;
+	uint16_t remotePort;
 	String method;
 	String route;
 	FormString queryString;
@@ -34,45 +40,18 @@ class HttpResponse {
 		explicit HttpResponse(EthernetClient &client);
 
 	public:
-		bool send(const String &body, const String &contentType, uint16_t status, const String &statusText);
-		bool send(const __FlashStringHelper * body, const __FlashStringHelper *contentType, uint16_t status, const __FlashStringHelper *statusText);
-		bool sendStream(const Stream &stream, const String &contentType);
+		bool send(const String &body, const String &contentType, uint16_t status = 200, const String &statusText = "OK");
+		bool sendStream(Stream &stream, const String &contentType);
 
-		inline bool send(const String &body, const String &contentType) {
-			return send(body, contentType, 200, "OK");
-		}
-		inline bool send(const __FlashStringHelper * body, const __FlashStringHelper *contentType) {
-			return send(body, contentType, 200, F("OK"));
-		}
-
-		inline bool text(const String &body) {
-			return send(body, "text/plain");
-		}
-		inline bool text(const __FlashStringHelper *body) {
-			return send(body, F("text/plain"));
-		}
-		inline bool text(const String &body, uint16_t status, const String &statusText) {
-			return send(body, "text/plain", status, statusText);
-		}
-		inline bool text(const __FlashStringHelper *body, uint16_t status, const __FlashStringHelper *statusText) {
+		inline bool text(const String &body, uint16_t status = 200, const String &statusText = "OK") {
 			return send(body, F("text/plain"), status, statusText);
 		}
 
-		inline bool html(const String &body) {
-			return send(body, "text/html");
-		}
-		inline bool html(const __FlashStringHelper *body) {
-			return send(body, F("text/html"));
-		}
-		inline bool html(const String &body, uint16_t status, const String &statusText) {
-			return send(body, "text/html", status, statusText);
-		}
-		inline bool html(const __FlashStringHelper *body, uint16_t status, const __FlashStringHelper *statusText) {
+		inline bool html(const String &body, uint16_t status = 200, const String &statusText = "OK") {
 			return send(body, F("text/html"), status, statusText);
 		}
 
 		bool redirect(const String &dest);
-		bool redirect(const __FlashStringHelper *dest);
 
 	private:
 		EthernetClient &_client;

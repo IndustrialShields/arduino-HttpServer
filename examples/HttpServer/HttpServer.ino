@@ -30,6 +30,8 @@ void loop() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void httpServerEvent(const HttpRequest &req, HttpResponse &res) {
+  Serial.print("client: ");
+  Serial.println(req.remoteIP);
   Serial.print("method: ");
   Serial.println(req.method);
   Serial.print("route: ");
@@ -49,7 +51,7 @@ void httpServerEvent(const HttpRequest &req, HttpResponse &res) {
     content += "method: " + req.method + "\n";
     content += "route: " + req.route + "\n";
     content += "query string: " + req.queryString + "\n";
-    content += "abc: " + req.queryString.getValue("abc") + "\n";
+    content += "abc: " + req.queryString.getValue(F("abc")) + "\n";
     // Send text content
     res.text(content);
 
@@ -59,6 +61,6 @@ void httpServerEvent(const HttpRequest &req, HttpResponse &res) {
 
   } else {
     // Send an error
-    res.send("Not Found", "text/plain", 404, "Not Found");
+    res.send("Not Found", "text/plain", 404, F("Not Found"));
   }
 }
