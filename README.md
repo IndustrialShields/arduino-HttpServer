@@ -1,4 +1,5 @@
-![Test Action](https://github.com/latchdevel/HttpServer/workflows/Test%20Action/badge.svg?branch=master)
+# ⚠️ TRANSFER WARNING
 
-# HttpServer
-Simple HTTP Server library for Arduino Ethernet shields based on WIZnet W5100/W5200/W5500 devices
+This repository has been transfered to Industrial Shields organization: https://github.com/Industrial-Shields/arduino-HttpServer
+
+If you have arrived here via an external link within our website https://industrialshields.com or documentation, please email to <support@industrialshields.com> to report the incident. Thank you for your collaboration.
